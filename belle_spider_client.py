@@ -1,4 +1,4 @@
-from bellespider import url_manager, html_downloader, html_parser, img_saver, redis_client
+from bellespider import url_manager, html_downloader, html_parser, img_saver
 
 
 class SpiderMain(object):
@@ -26,8 +26,12 @@ class SpiderMain(object):
             if cnt == 1000:
                 break
 
+    def retry(self):
+        self.saver.retry()
+
 
 if __name__ == '__main__':
     root_url = 'https://www.2717.com/ent/meinvtupian/2019/314371.html'
     main = SpiderMain()
     main.craw(root_url)
+    # main.retry()

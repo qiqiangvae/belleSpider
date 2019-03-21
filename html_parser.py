@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 import re
 
-img_compile = re.compile(r'^https://t1.hddhhn.com/uploads/tu/.*\.jpg$')
+img_compile = re.compile(r'^https://t1.hddhhn.com/uploads/tu/\d{6}/\d*/\w*\.jpg$')
 url_compile = re.compile(r'^/ent/meinvtupian/\d{4}/\d*\.html$')
 
 

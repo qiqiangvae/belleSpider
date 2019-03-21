@@ -4,7 +4,8 @@ import os
 
 from bellespider.redis_client import RedisClient
 
-HAS_IMG_KEY = 'belle:img:url:has'
+HAS_IMG_KEY_SAVED = 'belle:img:url:saved'
+HAS_IMG_KEY_FAILED = 'belle:img:url:failed'
 
 
 class ImgSaver(object):
@@ -25,7 +26,7 @@ class ImgSaver(object):
                     continue
                 else:
                     img = response.content
-                    dir_name = '/Users/qiqiang/Desktop/belle/' + re.compile(r'\d{6}/\d*').search(
+                    dir_name = '/Users/qiqiang/Desktop/belle/' + re.compile(r'\d{6}/\d+').search(
                         img_url).group().replace(
                         '/', '')
                     if not os.path.exists(dir_name):
@@ -34,15 +35,23 @@ class ImgSaver(object):
                     with open(img_name, 'wb') as f:
                         f.write(img)
                         self.downloaded(img_url)
-                        print('save belle img %d : %s' % (ImgSaver.cnt, img_name))
+                        print('save belle img %d : %s successful' % (ImgSaver.cnt, img_url))
                         ImgSaver.cnt += 1
 
 
             except Exception as ex:
-                pass
+                print('save belle img %d : %s  failed' % (ImgSaver.cnt, img_url))
+                self.failed(img_url)
 
     def had_downloaded(self, url):
-        return self.redis.sismember(HAS_IMG_KEY, url)
+        return self.redis.sismember(HAS_IMG_KEY_SAVED, url)
 
     def downloaded(self, url):
-        return self.redis.sadd(HAS_IMG_KEY, url)
+        return self.redis.sadd(HAS_IMG_KEY_SAVED, url)
+
+    def failed(self, url):
+        return self.redis.sadd(HAS_IMG_KEY_FAILED, url)
+
+    def retry(self):
+        lst = self.redis.smembers(HAS_IMG_KEY_FAILED)
+        self.save(lst)

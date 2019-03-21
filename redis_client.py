@@ -1,4 +1,7 @@
 import redis
+import re
+
+re_compile = re.compile(r'\d{6}/\d+')
 
 
 class RedisClient(object):
